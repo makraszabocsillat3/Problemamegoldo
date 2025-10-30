@@ -1,14 +1,16 @@
-/* ——— TÉMA (visszafogott, egységes) ——— */
+/* ——— TÉMA ——— */
 :root{
-  --bg:#f7f8fa; --text:#1f2937; --muted:#6b7280; --card:#fff;
+  --bg-grad-1:#f0f7ff;   /* halvány kék */
+  --bg-grad-2:#fff4f7;   /* halvány rózsaszín */
+  --text:#1f2937; --muted:#6b7280; --card:#ffffff;
   --shadow:0 6px 16px rgba(0,0,0,.06);
-  --brand:#0b63c9;   /* fejléc kék */
+  --brand:#0b63c9;
 
-  /* kártya-akcentek (bal csík és sorszám) */
-  --c1:#265DAB;  /* kék */
-  --c2:#2F855A;  /* zöld */
-  --c3:#B7791F;  /* borostyán */
-  --c4:#7B61FF;  /* viola */
+  /* kártya-akcentek és tinták */
+  --c1:#265DAB;  --t1:#e8f1ff;
+  --c2:#2F855A;  --t2:#e8fff1;
+  --c3:#B7791F;  --t3:#fff5e6;
+  --c4:#7B61FF;  --t4:#efe9ff;
 }
 
 /* ——— ALAP ——— */
@@ -16,7 +18,9 @@
 html,body{margin:0;padding:0}
 body{
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  background:var(--bg); color:var(--text); line-height:1.6;
+  /* lágy, színes háttér */
+  background:linear-gradient(135deg,var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+  color:var(--text); line-height:1.6;
 }
 a{ color:#0b63c9; text-decoration:none }
 a:hover{ text-decoration:underline }
@@ -27,13 +31,13 @@ a:hover{ text-decoration:underline }
 .topbar h1{ margin:0 0 4px; font-size:26px; font-weight:700; letter-spacing:.2px }
 .subtitle{ margin:0; opacity:.95 }
 
-/* ——— INTRO ——— */
+/* ——— INTRO + táblázat ——— */
 .intro{
   background:var(--card); padding:14px 16px; border-radius:12px;
   box-shadow:var(--shadow); margin:20px 0;
 }
 
-/* ——— Összefoglaló táblázat a .intro szekcióban ——— */
+/* csak az összefoglaló táblázatot formázzuk */
 .intro table{
   width:100%;
   border-collapse:separate; border-spacing:0;
@@ -63,19 +67,24 @@ a:hover{ text-decoration:underline }
   gap:16px; margin-bottom:22px;
 }
 
-/* ——— KÁRTYA ALAP ——— */
+/* ——— KÁRTYÁK ——— */
 .card{
   background:var(--card); border-radius:12px; padding:14px 16px;
   box-shadow:var(--shadow); transition:transform .08s ease, box-shadow .2s ease;
 }
 .card:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.08) }
+
+/* finom, feladatonként eltérő „tint” háttér a kártyáknak */
+.grid > .card:nth-child(1){ background:var(--t1) }
+.grid > .card:nth-child(2){ background:var(--t2) }
+.grid > .card:nth-child(3){ background:var(--t3) }
+.grid > .card:nth-child(4){ background:var(--t4) }
+
 .card-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px }
 .card h2{ margin:0; font-size:18px; font-weight:700 }
 .desc{ margin:0 0 8px 0; color:#253041 }
 
-/* ——— SZÍNES BAL CSÍK (csak a grid kártyákon) ——— */
-.card::before{ content:none }
-.intro.card::before{ content:none }
+/* színes bal csík a kártyákon */
 .grid > .card{ position:relative }
 .grid > .card::before{
   content:""; position:absolute; left:0; top:0; bottom:0; width:6px; border-radius:12px 0 0 12px;
@@ -85,11 +94,8 @@ a:hover{ text-decoration:underline }
 .grid > .card:nth-child(3)::before{ background:var(--c3) }
 .grid > .card:nth-child(4)::before{ background:var(--c4) }
 
-/* ——— JELVÉNY ——— */
-.badge{
-  font-size:12px; color:#fff; background:#8a94a6;
-  padding:3px 8px; border-radius:999px;
-}
+/* ——— „váz” jelvény KIKAPCS ——— */
+.badge{ display:none }
 
 /* ——— GOMBOK ——— */
 .btns{ display:flex; flex-wrap:wrap; gap:8px }
@@ -131,14 +137,12 @@ a:hover{ text-decoration:underline }
 .problem-fig{ margin:0 }
 .problem-img{
   width:100%; height:auto; display:block;
-  border:1px solid #e5e7eb; border-radius:8px;
+  border:1px solid rgba(0,0,0,.08); border-radius:8px;
+  background:#fff; /* kép mögé finom fehér */
 }
 .problem-fig figcaption{
   font-size:12px; color:#6b7280; margin-top:4px;
 }
-
-/* ——— LÁBJEGYZET ——— */
-.footnote{ text-align:center; color:#6b7280; margin:8px 0 26px; font-size:14px }
 
 /* ——— TÉMA “chipek” ——— */
 .topic{
@@ -154,6 +158,9 @@ a:hover{ text-decoration:underline }
 .chip.moho{     background:#dcfce7; color:#166534 }
 .chip.graf{     background:#fee2e2; color:#991b1b }
 .chip.dp{       background:#f1f5f9; color:#0f172a }
+
+/* ——— LÁBJEGYZET ——— */
+.footnote{ text-align:center; color:#6b7280; margin:8px 0 26px; font-size:14px }
 
 /* ——— MOBIL ——— */
 @media (max-width:420px){
