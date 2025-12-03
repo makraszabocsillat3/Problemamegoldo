@@ -76,17 +76,118 @@
           </figure>
         </section>
 
+        <!-- VESZÉLYES HELYEK – MAGYARÁZAT -->
+        <section class="block">
+          <h3 class="label">Magyarázat (szövegben)</h3>
+          <pre class="explain">Veszélyes helyek – Magyarázat (Rekurzió)
+
+A folyót egy rácsként ábrázoljuk, ahol minden mezőben egy szám áll:
+
+0: biztonságos víz
+
+1: örvény, veszélyes víz
+
+A hajó a bal szélső oszlopból indulhat, bármelyik sorból. Minden lépésben csak jobbra mehet: jobbra-fel, jobbra-egyenesen vagy jobbra-le. A cél: olyan kezdősor kiválasztása, ahonnan indulva a jobb szélső oszlopig eljutva a lehető legkevesebb 1-es mezőn kell áthaladni. Ha több megoldás is ugyanolyan jó, a legfelül lévőt választjuk.
+
+Ehhez egy rekurzív függvényt használok: legjobbUtvonalInnen(sor, oszlop).
+
+Ez megmondja, hogy ha az adott (sor, oszlop) mezőről indulok, mennyi a legkevesebb összes 1-es, amíg elérek a jobb szélig, ha mindig a legjobb irányt választom.
+
+Alapeset: ha az utolsó oszlopban vagyunk, akkor innen nincs tovább lépés, a függvény egyszerűen visszaadja az aktuális mező értékét (0 vagy 1).
+
+Rekurzív eset: ha nem az utolsó oszlopban vagyunk, akkor megnézem, merre tudok menni: jobbra-fel, jobbra, jobbra-le. Ezekre a pozíciókra rekurzívan meghívom a legjobbUtvonalInnen függvényt, és a három közül kiválasztom a legkisebb értéket. Az aktuális mező értékét (0 vagy 1) hozzáadom ehhez, így megkapom, mennyibe „kerül” innen a jobb partig az optimális út.
+
+Hogy ne számoljak feleslegesen sokszor ugyanazt, egy másik táblát is vezetek: megjegyzesTabla[sor][oszlop]. Kezdetben mindenhol –1 van benne. Ha egyszer már kiszámoltam legjobbUtvonalInnen(sor, oszlop) értékét, eltárolom ebben a táblában. Ha legközelebb ugyanerről a mezőről kérdezem, nem hívom újra a rekurziót, csak visszaolvasom a tárolt értéket.
+
+A megoldáshoz a bal szélső oszlop összes sorára meghívom a függvényt: legjobbUtvonalInnen(sor, 0). Ahol a legkisebb értéket kapom, az lesz a legjobb kezdősor. A feladat 1-től számozza a sorokat, ezért a program a kiválasztott sor indexéhez 1-et ad.</pre>
+        </section>
+
         <section class="block">
           <h3 class="label">Megoldás (Java)</h3>
-          <ul class="line">
-            <li>📝 <a href="#" target="_blank" rel="noopener">Magyarázat (később)</a></li>
-            <li>💻 <a href="#" target="_blank" rel="noopener">Forráskód (Java)</a></li>
-          </ul>
+          <pre><code>import java.util.Scanner;
+
+public class veszelyesHelyek {
+
+    static int sorokSzama;
+    static int oszlopokSzama;
+    static int[][] palya;
+    static int[][] megjegyzesTabla;
+
+    public static int legjobbUtvonalInnen(int sor, int oszlop) {
+
+        if (oszlop == oszlopokSzama - 1) {
+            return palya[sor][oszlop];
+        }
+        if (megjegyzesTabla[sor][oszlop] != -1) {
+            return megjegyzesTabla[sor][oszlop];
+        }
+
+        int legjobbEddig = Integer.MAX_VALUE;
+
+        if (sor &gt; 0) {
+            int ertekFel = legjobbUtvonalInnen(sor - 1, oszlop + 1);
+            legjobbEddig = Math.min(legjobbEddig, ertekFel);
+        }
+
+        int ertekKozep = legjobbUtvonalInnen(sor, oszlop + 1);
+        legjobbEddig = Math.min(legjobbEddig, ertekKozep);
+
+        if (sor &lt; sorokSzama - 1) {
+            int ertekLe = legjobbUtvonalInnen(sor + 1, oszlop + 1);
+            legjobbEddig = Math.min(legjobbEddig, ertekLe);
+        }
+
+        int vegsoErtek = palya[sor][oszlop] + legjobbEddig;
+        megjegyzesTabla[sor][oszlop] = vegsoErtek;
+
+        return vegsoErtek;
+    }
+
+    public static int melyikSorbolInduljunk() {
+        int legkisebbVeszely = Integer.MAX_VALUE;
+        int legjobbSor = 0;
+
+        for (int sor = 0; sor &lt; sorokSzama; sor++) {
+            int veszely = legjobbUtvonalInnen(sor, 0);
+
+            if (veszely &lt; legkisebbVeszely) {
+                legkisebbVeszely = veszely;
+                legjobbSor = sor;
+            }
+        }
+
+        return legjobbSor + 1;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        sorokSzama = sc.nextInt();
+        oszlopokSzama = sc.nextInt();
+
+        palya = new int[sorokSzama][oszlopokSzama];
+        megjegyzesTabla = new int[sorokSzama][oszlopokSzama];
+
+        for (int sor = 0; sor &lt; sorokSzama; sor++) {
+            for (int oszlop = 0; oszlop &lt; oszlopokSzama; oszlop++) {
+                megjegyzesTabla[sor][oszlop] = -1;
+            }
+        }
+
+        for (int sor = 0; sor &lt; sorokSzama; sor++) {
+            for (int oszlop = 0; oszlop &lt; oszlopokSzama; oszlop++) {
+                palya[sor][oszlop] = sc.nextInt();
+            }
+        }
+
+        System.out.println(melyikSorbolInduljunk());
+    }
+}</code></pre>
         </section>
 
         <section class="block">
           <h3 class="label">Kész kód (ZIP)</h3>
-          <a class="btn download" href="zip/feladat1-kod.zip" download>⬇ Letöltés (feladat1-kod.zip)</a>
+          <a class="btn download" href="zip/VeszelyesHelyek.zip" download>⬇ Letöltés (feladat1-kod.zip)</a>
         </section>
       </article>
 
@@ -116,17 +217,109 @@
           </figure>
         </section>
 
+        <!-- FIÚK ÉS LÁNYOK – MAGYARÁZAT -->
+        <section class="block">
+          <h3 class="label">Magyarázat (szövegben)</h3>
+          <pre class="explain">Fiúk és lányok – Magyarázat (Mohó)
+
+A feladatban egy sorban álló csoportot kapunk, ahol N fiú és N lány van. A sort egy karakterlánc írja le, ahol F = fiú, L = lány. Összesen 2N gyerek áll egymás mellett.
+
+Cél: úgy átrendezni a sort, hogy felváltva álljanak a gyerekek, vagyis:
+
+F L F L F L … vagy
+
+L F L F L F …
+
+Mindegy, hogy fiúval vagy lánnyal kezdünk, a lényeg, hogy felváltva kövessék egymást. Egy lépésben egy fiút és egy lányt cserélhetünk meg a sorban. A feladat azt kérdezi, hogy mi a minimálisan szükséges cserék száma.
+
+A gondolatmenet:
+
+Két lehetséges „jó” mintát vizsgálok:
+
+F-lel kezdjük a sort: F L F L F L …
+
+L-lel kezdjük a sort: L F L F L F …
+
+A program nem konkrét gyerekeket, hanem pozíciókat vizsgál. Minden pozíciónál tudjuk, hogy az adott mintában melyik betűnek kellene ott állnia. Ha a valós sorban más betű áll ott, mint amit a minta szerint várnánk, akkor azt a pozíciót hibának tekintjük.
+
+Például az F L F L F L mintánál:
+
+páros indexű helyeken (0, 2, 4, …) F-et várunk,
+
+páratlan indexű helyeken (1, 3, 5, …) L-t.
+
+Ha a valós sorban ettől eltérés van, akkor növeljük a hibaszámlálót az „F-lel kezdő” mintára. Ugyanezt külön megszámoljuk az „L-lel kezdő” mintára is, ahol a páros helyeken L-t, a páratlanokon F-et várunk.
+
+Nagyon fontos felismerés, hogy egy csere két hibát javít ki egyszerre. Ha valahol rossz helyen áll egy F (fiú), máshol pedig rossz helyen áll egy L (lány), és ezt a két pozíciót felcseréljük, akkor mindkét helyen jó betű lesz. Ezért a szükséges cserék száma adott mintához:
+
+cserék száma = hibák száma / 2
+
+Ezt mindkét mintára kiszámoljuk:
+
+hibák, ha F-lel kezdünk → cserék_F = hibák_F / 2
+
+hibák, ha L-lel kezdünk → cserék_L = hibák_L / 2
+
+A feladat megoldása a két érték közül a kisebb.
+
+Ez a módszer egyszerű mintafelismerésen és számláláson alapul, programozás szempontjából is könnyen érthető, és jól mutatja, hogyan lehet egy optimalizálási problémát nagyon egyszerű logikával megoldani.</pre>
+        </section>
+
         <section class="block">
           <h3 class="label">Megoldás (Java)</h3>
-          <ul class="line">
-            <li>📝 <a href="#" target="_blank" rel="noopener">Magyarázat (később)</a></li>
-            <li>💻 <a href="#" target="_blank" rel="noopener">Forráskód (Java)</a></li>
-          </ul>
+          <pre><code>import java.util.Scanner;
+
+public class FiukLanyok {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        String sor = sc.nextLine().trim();
+        int hossz = sor.length();
+
+        int hibakFKezzel = 0;
+        int hibakLKezzel = 0;
+
+        for (int i = 0; i &lt; hossz; i++) {
+            char valos = sor.charAt(i);
+
+            char vartFMinta;
+            if (i % 2 == 0) {
+                vartFMinta = 'F';
+            } else {
+                vartFMinta = 'L';
+            }
+            if (valos != vartFMinta) {
+                hibakFKezzel++;
+            }
+
+            char vartLMinta;
+            if (i % 2 == 0) {
+                vartLMinta = 'L';
+            } else {
+                vartLMinta = 'F';
+            }
+            if (valos != vartLMinta) {
+                hibakLKezzel++;
+            }
+        }
+
+        int cserekF = hibakFKezzel / 2;
+        int cserekL = hibakLKezzel / 2;
+
+        int eredmeny = Math.min(cserekF, cserekL);
+
+        System.out.println(eredmeny);
+    }
+}</code></pre>
         </section>
 
         <section class="block">
           <h3 class="label">Kész kód (ZIP)</h3>
-          <a class="btn download" href="zip/feladat2-kod.zip" download>⬇ Letöltés (feladat2-kod.zip)</a>
+          <a class="btn download" href="zip/FiukLanyok.zip" download>⬇ Letöltés (feladat2-kod.zip)</a>
         </section>
       </article>
 
@@ -156,17 +349,73 @@
           </figure>
         </section>
 
+        <!-- TÁRSASJÁTÉK – MAGYARÁZAT -->
+        <section class="block">
+          <h3 class="label">Magyarázat (szövegben)</h3>
+          <pre class="explain">Társasjáték – Magyarázat (Gráf)
+
+A feladatban egy társasjáték mezőin kell végighaladni. A mezők 1-től N-ig vannak számozva, és mindig az 1. mezőről indulunk. Minden mezőről kétféleképpen lehet továbblépni:
+
+• sima lépéssel a következő mezőre (i → i+1),
+• vagy arra a mezőre, amelynek a száma rá van írva az adott mezőre.
+
+Csak előre lehet lépni, vagyis az ugrás akkor használható, ha nagyobb sorszámú mezőre visz. Minden lépés egy lépésnek számít, tehát azt kell meghatározni, mi a legkevesebb lépés, amellyel eljuthatunk az utolsó mezőre.
+
+A gondolkodásom úgy nézett ki, hogy a mezőket csomópontoknak tekintettem. Minden mezőből kimegy két „útvonal”: az egyikkel egyet lehet előrelépni, a másikkal messzebbre lehet ugrani. Így a mezők egy egyszerű irányított gráfot alkotnak. A cél, hogy a lehető legrövidebb útvonalat találjuk meg 1-től N-ig.
+
+Ehhez vezettem egy tömböt, amelyben azt tároltam, hogy az adott mezőt hány lépésből lehet elérni. Az induló mező értéke 0, a többi mező kezdetben nagyon nagy szám. Ezután sorban, balról jobbra végighaladtam a mezőkön. Minden mezőnél megvizsgáltam, hogy ha előrelépnék vagy ugranék, az kevesebb lépést jelent-e az adott célmezőnek. Ha igen, akkor azt átírtam. A folyamat végén az utolsó mezőhöz tartozó érték adja a legrövidebb lépésszámot.
+
+A mezők gráfcsomópontoknak tekinthetők. Minden csúcsból két él indul: az egyik a következő mezőre mutat, a másik a mezőre írt célmezőre, ha az előre visz. Mivel minden él előre mutat, a gráf körmentes, és így egyszerű végighaladással megtalálható a legrövidebb út. A módszer hasonló elven működik, mint a BFS, de a speciális szerkezet miatt nincs szükség külön sorra vagy összetett adatszerkezetre.</pre>
+        </section>
+
         <section class="block">
           <h3 class="label">Megoldás (Java)</h3>
-          <ul class="line">
-            <li>📝 <a href="#" target="_blank" rel="noopener">Magyarázat (később)</a></li>
-            <li>💻 <a href="#" target="_blank" rel="noopener">Forráskód (Java)</a></li>
-          </ul>
+          <pre><code>import java.util.Scanner;
+
+public class Tarsasjatek {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] ugras = new int[n + 1];
+
+        for (int i = 1; i &lt;= n; i++) {
+            ugras[i] = sc.nextInt();
+        }
+
+        int nagy = Integer.MAX_VALUE / 2;
+        int[] min = new int[n + 1];
+
+        for (int i = 1; i &lt;= n; i++) {
+            min[i] = nagy;
+        }
+        min[1] = 0;
+
+        for (int i = 1; i &lt; n; i++) {
+            if (min[i] == nagy) continue;
+
+      
+            if (min[i] + 1 &lt; min[i + 1]) {
+                min[i + 1] = min[i] + 1;
+            }
+
+            int cel = ugras[i];
+            if (cel &gt; i &amp;&amp; cel &lt;= n) {
+                if (min[i] + 1 &lt; min[cel]) {
+                    min[cel] = min[i] + 1;
+                }
+            }
+        }
+
+        System.out.println(min[n]);
+    }
+}</code></pre>
         </section>
 
         <section class="block">
           <h3 class="label">Kész kód (ZIP)</h3>
-          <a class="btn download" href="zip/feladat3-kod.zip" download>⬇ Letöltés (feladat3-kod.zip)</a>
+          <a class="btn download" href="zip/Tarsasjatek.zip" download>⬇ Letöltés (feladat3-kod.zip)</a>
         </section>
       </article>
 
@@ -196,17 +445,106 @@
           </figure>
         </section>
 
+        <!-- FÖLDVÁSÁRLÁS – MAGYARÁZAT -->
+        <section class="block">
+          <h3 class="label">Magyarázat (szövegben)</h3>
+          <pre class="explain">Földvásárlás – Magyarázat (dinamikus programozás)
+
+A feladatban egymás mellett sorban álló telkeket kapunk. Minden teleknek van egy ára. Tudjuk, hogy pontosan K db egymás melletti telket kell megvennünk egy szállodához.
+
+Cél: meg kell találni
+
+• mennyi a legkisebb összeg, amit K szomszédos telekért fizetnünk kell,
+• és hogy hány különböző K hosszú szomszédos telekcsoport adja ezt a minimális összeget.
+
+Példa a feladatból:
+
+Bemenet
+8 3
+9 6 1 7 1 6 2 9
+
+Itt 8 telek van, és mindig 3 egymás mellettit kell venni.
+
+A lehetséges 3-as csoportok összegei:
+
+1–3. telkek: 9 + 6 + 1 = 16
+2–4. telkek: 6 + 1 + 7 = 14
+3–5. telkek: 1 + 7 + 1 = 9
+4–6. telkek: 7 + 1 + 6 = 14
+5–7. telkek: 1 + 6 + 2 = 9
+6–8. telkek: 6 + 2 + 9 = 17
+
+A legkisebb összeg 9, és ezt kétféleképpen kapjuk meg (3–5. és 5–7. telkek).
+
+Kimenet tehát:
+9
+2
+
+Ötlet
+
+Ha minden csoportot külön-külön kiszámolnánk nulláról, az lassabb lenne. Dinamikus gondolkodással inkább azt csináljuk, hogy:
+
+• először kiszámoljuk az első K telek összegét,
+• utána mindig csak „csúsztatjuk az ablakot” egyet jobbra:
+  – kivonjuk az előző ablak bal szélső telkének árát,
+  – hozzáadjuk az újonnan belépő telek árát.
+
+Így minden új ablak összegét az előző ablakból számoljuk ki, egyetlen kivonással és egyetlen összeadással. Ez egy nagyon egyszerű dinamikus programozás jellegű stratégia: az új állapot az előző állapotból készül.
+
+Miközben végig csúsztatjuk az ablakot, folyamatosan figyeljük:
+
+• mi a legkisebb eddigi összeg,
+• hányszor fordult elő ez a legkisebb összeg.
+
+Megjegyzés: az aktuálisÖsszeg lehet nagy, ezért a Java-ban long típust használok rá, hogy biztosan ne fusson túl.</pre>
+        </section>
+
         <section class="block">
           <h3 class="label">Megoldás (Java)</h3>
-          <ul class="line">
-            <li>📝 <a href="#" target="_blank" rel="noopener">Magyarázat (később)</a></li>
-            <li>💻 <a href="#" target="_blank" rel="noopener">Forráskód (Java)</a></li>
-          </ul>
+          <pre><code>import java.util.Scanner;
+
+public class FoldVasarlas {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int k = sc.nextInt();
+
+        int[] telkekAra = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            telkekAra[i] = sc.nextInt();
+        }
+
+        long aktualisOsszeg = 0;
+        for (int i = 0; i &lt; k; i++) {
+            aktualisOsszeg += telkekAra[i];
+        }
+
+        long legkisebbOsszeg = aktualisOsszeg;
+        long darab = 1;
+
+        for (int i = k; i &lt; n; i++) {
+            aktualisOsszeg -= telkekAra[i - k];
+            aktualisOsszeg += telkekAra[i];
+
+            if (aktualisOsszeg &lt; legkisebbOsszeg) {
+                legkisebbOsszeg = aktualisOsszeg;
+                darab = 1;
+            } else if (aktualisOsszeg == legkisebbOsszeg) {
+                darab++;
+            }
+        }
+
+        System.out.println(legkisebbOsszeg);
+        System.out.println(darab);
+    }
+}</code></pre>
         </section>
 
         <section class="block">
           <h3 class="label">Kész kód (ZIP)</h3>
-          <a class="btn download" href="zip/feladat4-kod.zip" download>⬇ Letöltés (feladat4-kod.zip)</a>
+          <a class="btn download" href="zip/Foldvasarlas.zip" download>⬇ Letöltés (feladat4-kod.zip)</a>
         </section>
       </article>
 
